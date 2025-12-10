@@ -31,6 +31,7 @@ const SPAWN_RATE_MIN = 20;
 
 export const MeteorDodgeGame = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [gameState, setGameState] = useState<GameState>("start");
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(() => {
@@ -232,6 +233,9 @@ export const MeteorDodgeGame = () => {
     setScore(0);
     setGameState("playing");
 
+    // Focus the container to capture keyboard events
+    containerRef.current?.focus();
+
     // Clear canvas
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
@@ -244,35 +248,33 @@ export const MeteorDodgeGame = () => {
   }, [gameLoop]);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (gameState !== "playing") return;
-      const data = gameDataRef.current;
-      if (e.key === "ArrowLeft" || e.key === "a") data.keys.left = true;
-      if (e.key === "ArrowRight" || e.key === "d") data.keys.right = true;
-      if (e.key === "ArrowUp" || e.key === "w") data.keys.up = true;
-      if (e.key === "ArrowDown" || e.key === "s") data.keys.down = true;
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      const data = gameDataRef.current;
-      if (e.key === "ArrowLeft" || e.key === "a") data.keys.left = false;
-      if (e.key === "ArrowRight" || e.key === "d") data.keys.right = false;
-      if (e.key === "ArrowUp" || e.key === "w") data.keys.up = false;
-      if (e.key === "ArrowDown" || e.key === "s") data.keys.down = false;
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
-
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
       cancelAnimationFrame(gameDataRef.current.animationId);
     };
-  }, [gameState]);
+  }, []);
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen p-4">
+    <div 
+      ref={containerRef}
+      tabIndex={0}
+      className="relative flex flex-col items-center justify-center min-h-screen p-4 outline-none"
+      onKeyDown={(e) => {
+        if (gameState !== "playing") return;
+        const data = gameDataRef.current;
+        if (e.key === "ArrowLeft" || e.key === "a") data.keys.left = true;
+        if (e.key === "ArrowRight" || e.key === "d") data.keys.right = true;
+        if (e.key === "ArrowUp" || e.key === "w") data.keys.up = true;
+        if (e.key === "ArrowDown" || e.key === "s") data.keys.down = true;
+        e.preventDefault();
+      }}
+      onKeyUp={(e) => {
+        const data = gameDataRef.current;
+        if (e.key === "ArrowLeft" || e.key === "a") data.keys.left = false;
+        if (e.key === "ArrowRight" || e.key === "d") data.keys.right = false;
+        if (e.key === "ArrowUp" || e.key === "w") data.keys.up = false;
+        if (e.key === "ArrowDown" || e.key === "s") data.keys.down = false;
+      }}
+    >
       <StarField />
       
       <div className="relative z-10 flex flex-col items-center gap-6">
