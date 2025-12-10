@@ -303,7 +303,11 @@ export const MeteorDodgeGame = () => {
               </div>
               <h1 className="game-title mb-2">METEOR</h1>
               <h1 className="game-title mb-6">DODGE</h1>
-              <p className="game-subtitle mb-8">Survive the asteroid field</p>
+              <p className="text-muted-foreground font-body text-sm max-w-xs text-center mb-8 leading-relaxed">
+                Pilot your spaceship through an endless meteor storm. 
+                Dodge falling asteroids as they speed up over time. 
+                How long can you survive?
+              </p>
               
               <Button variant="game" size="xl" onClick={startGame}>
                 <Play className="w-6 h-6 mr-2" />
